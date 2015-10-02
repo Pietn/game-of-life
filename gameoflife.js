@@ -3,12 +3,24 @@
 	var context = canvas.getContext('2d');
 	var grid = createGrid();
 	
+	var Color = {
+		red: 0,
+		green: 0,
+		blue: 0,
+		toString: function () {
+			return 'rgb(' + 
+				this.red + ',' +
+				this.green + ',' +
+				this.blue + ')';
+		}
+	}
+	
 	addRandomTiles();
 	drawGrid();
 	
 	setInterval(function () {
 		updateGrid();
-		context.clearRect(0, 0, canvas.width, canvas.height);
+		//context.clearRect(0, 0, canvas.width, canvas.height);
 		drawGrid();
 	}, 200);
 	
@@ -61,49 +73,53 @@
 			b = 0;
 		}
 		
-		var count = 0;
+		var neighbors = [];
 		
 		if(grid[t][l].alive) {
-			count++;
+			neighbors.push(grid[t][l]);
 		}
 		if(grid[y][l].alive) {
-			count++;
+			neighbors.push(grid[y][l]);
 		}
 		if(grid[b][l].alive) {
-			count++;
+			neighbors.push(grid[b][l]);
 		}
 		
 		if(grid[t][x].alive) {
-			count++;
+			neighbors.push(grid[t][x]);
 		}
 		if(grid[b][x].alive) {
-			count++;
+			neighbors.push(grid[b][x]);
 		}
 		
 		if(grid[t][r].alive) {
-			count++;
+			neighbors.push(grid[t][r]);
 		}
 		if(grid[y][r].alive) {
-			count++;
+			neighbors.push(grid[y][r]);
 		}
 		if(grid[b][r].alive) {
-			count++;
+			neighbors.push(grid[b][r]);
 		}
 		
-		return count;
+		return neighbors;
 	}
 	
 	function updateCell(x, y) {
 		var neighbors = countNeighbors(x, y);
 		if (grid[y][x].alive) {
 			return {
-				alive: neighbors === 2 || neighbors === 3,
+				alive: neighbors.length === 2 || neighbors.length === 3,
 				color: grid[y][x].color
 			};
 		} else {
+			var color = grid[y][x].color;
+			if (neighbors.length === 3) {
+				color = inheritColor(neighbors);
+			}
 			return {
-				alive: neighbors === 3,
-				color: randomColor()
+				alive: neighbors.length === 3,
+				color: color
 			};
 		}
 	}
@@ -122,17 +138,32 @@
 	}
 	
 	function randomColor() {
-		return {
-			red: Math.floor(Math.random() * 256),
-			green: Math.floor(Math.random() * 256),
-			blue: Math.floor(Math.random() * 256),
-			toString: function () {
-				return 'rgb(' + 
-					this.red + ',' +
-					this.green + ',' +
-					this.blue + ')';
+		var color = Object.create(Color);
+		color.red = Math.floor(Math.random() * 256);
+		color.green = Math.floor(Math.random() * 256);
+		color.blue = Math.floor(Math.random() * 256);
+		return color;
+	}
+	
+	function averageColor(colors, color) {
+		var result = colors[0][color];
+		for (var i = 1; i < colors.length; i++) {
+			if (Math.random() < 0.5) {
+				result = colors[i][color];
 			}
 		}
+		return result + Math.floor((Math.random() * 21) - 10);
+	}
+	
+	function inheritColor(neighbors) {
+		var colors = neighbors.map(function (neighbor) {
+			return neighbor.color;
+		});
+		var color = Object.create(Color);
+		color.red = averageColor(colors, 'red');
+		color.green = averageColor(colors, 'green');
+		color.blue = averageColor(colors, 'blue');
+		return color;
 	}
 	
 	function addRandomTiles() {
@@ -143,4 +174,5 @@
 			grid[y][x].color = randomColor();
 		}
 	}
+	
 })(50, 50, document.getElementById('c'), 500);
