@@ -1,13 +1,10 @@
-(function (width, height, canvas) {
+(function (width, height, canvas, initialFields) {
 	var tileSize = 10;
 	var context = canvas.getContext('2d');
 	var grid = createGrid();
 	
-	grid[1][1].alive = true;
-	grid[1][2].alive = true;
-	grid[1][3].alive = true;
-	
-	updateGrid();
+	addRandomTiles();
+	//updateGrid();
 	drawGrid();
 	
 	function drawTile(x, y, color) {
@@ -117,4 +114,10 @@
 		
 		grid = newGrid;
 	}
-})(5, 5, document.getElementById('c'));
+	
+	function addRandomTiles() {
+		for (var i = 0; i < initialFields; i++) {
+			grid[Math.floor((Math.random() * height))][Math.floor((Math.random() * width))].alive = true;
+		}
+	}
+})(50, 50, document.getElementById('c'), 10);
