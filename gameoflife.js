@@ -23,7 +23,7 @@
 			grid[h] = [];
 			for (var w = 0; w < width; w++) {
 				grid[h][w] = { 
-					alive: false 
+					alive: false
 				};
 			}
 		}
@@ -34,7 +34,7 @@
 		for (var h = 0; h < height; h++) {
 			for (var w = 0; w < width; w++) {
 				if (grid[h][w].alive) {
-					drawTile(w, h, 'black');
+					drawTile(w, h, grid[h][w].color.toString());
 				}
 			}
 		}
@@ -97,11 +97,13 @@
 		var neighbors = countNeighbors(x, y);
 		if (grid[y][x].alive) {
 			return {
-				alive: neighbors === 2 || neighbors === 3
+				alive: neighbors === 2 || neighbors === 3,
+				color: grid[y][x].color
 			};
 		} else {
 			return {
-				alive: neighbors === 3
+				alive: neighbors === 3,
+				color: randomColor()
 			};
 		}
 	}
@@ -119,9 +121,26 @@
 		grid = newGrid;
 	}
 	
+	function randomColor() {
+		return {
+			red: Math.floor(Math.random() * 256),
+			green: Math.floor(Math.random() * 256),
+			blue: Math.floor(Math.random() * 256),
+			toString: function () {
+				return 'rgb(' + 
+					this.red + ',' +
+					this.green + ',' +
+					this.blue + ')';
+			}
+		}
+	}
+	
 	function addRandomTiles() {
 		for (var i = 0; i < initialFields; i++) {
-			grid[Math.floor((Math.random() * height))][Math.floor((Math.random() * width))].alive = true;
+			var y = Math.floor((Math.random() * height));
+			var x = Math.floor((Math.random() * width));
+			grid[y][x].alive = true;
+			grid[y][x].color = randomColor();
 		}
 	}
 })(50, 50, document.getElementById('c'), 500);
