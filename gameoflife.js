@@ -4,8 +4,13 @@
 	var grid = createGrid();
 	
 	addRandomTiles();
-	//updateGrid();
 	drawGrid();
+	
+	setInterval(function () {
+		updateGrid();
+		context.clearRect(0, 0, canvas.width, canvas.height);
+		drawGrid();
+	}, 200);
 	
 	function drawTile(x, y, color) {
 		context.fillStyle = color;
@@ -85,7 +90,6 @@
 			count++;
 		}
 		
-		console.log(x, y, count);	
 		return count;
 	}
 	
@@ -120,4 +124,4 @@
 			grid[Math.floor((Math.random() * height))][Math.floor((Math.random() * width))].alive = true;
 		}
 	}
-})(50, 50, document.getElementById('c'), 10);
+})(50, 50, document.getElementById('c'), 500);
